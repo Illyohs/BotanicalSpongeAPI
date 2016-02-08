@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+//    id 'maven'
+    id 'idea'
+    id 'eclipse'
+}
+
+ext.configFile = file "build.properties"
+
+configFile.withReader {
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
+}
+
+if (System.getenv('BUILD_NUMBER') != null) {
+    version = "${config.mod_version}.${config.minor_version}.${config.patch_version}.${System.getenv('BUILD_NUMBER')}"
+} else {
+    version = "${config.mod_version}.${config.minor_version}.${config.patch_version}.local"
+}
+
+group= "${config.group}"
+archivesBaseName = "${config.name}"
+
+repositories {
+    mavenCentral()
+    maven {
+        name "Sponge Maven"
+        url "http://repo.spongepowered.org/maven/"
+    }
+}
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:3.1.0-SNAPSHOT'
+}
